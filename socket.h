@@ -4,11 +4,13 @@
 class Socket {
 public:
     Socket();
-    recv();
-    send(char*);
-    char* recvbuffer[100];
+    void recvData();
+    void sendData(const char*);
+    char recvbuffer[100];
 private:
-    int addrlen;
+    unsigned int addrlen;
+    int sd;
+	struct sockaddr_in addr;
 };
 
 #endif

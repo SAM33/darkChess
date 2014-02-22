@@ -1,7 +1,20 @@
+#ifdef _WIN32
 #include <winsock.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <windows.h>
+#endif
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#ifdef linux
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif
 
 #include "socket.h"
 
@@ -10,7 +23,7 @@
 #define	DEST_PORT  9998
 #define DEST_IP    "127.0.0.1"
 
-void Socket :: send(char *str)
+void Socket :: sendData(const char *str)
 {
 	struct sockaddr_in dest_addr;
 	int sd;
@@ -27,7 +40,7 @@ void Socket :: send(char *str)
 	printf("°e¥X %s\n",buffer);
 }
 
-void Socket :: recv()
+void Socket :: recvData()
 {
 	int client = accept(sd, (struct sockaddr*)&addr, &addrlen );
     memset(recvbuffer,'\0',MAXBUFF);
@@ -38,10 +51,7 @@ void Socket :: recv()
 
 Socket :: Socket()
 {
-	struct sockaddr_in addr;
-	int sd;
 	addrlen = sizeof(addr);
-	int client;
 	sd = socket(PF_INET, SOCK_STREAM, 0);
     addr.sin_family = AF_INET;
     addr.sin_port = htons(PORT);
@@ -55,18 +65,23 @@ Socket :: Socket()
 
 int main(void)
 {
+#ifdef _WIN32
 	WSADATA wsaData ;
-	if( WSAStartup(MAKEWORD(1,1) , &wsaData ) == 0 )
+	if( WSAStartup(MAKEWORD(1,1) , &wsaData ) != 0 )
 	{
-	    Socket sok;
-	    while(1)
-        {
-            puts("main throws 5566");
-            sok.send("5566 der di ii");
-            recv();
-            printf("main gets %s\n",recvbuffer);
-            sleep(1000);
-        }
-	}
+	    return 1;
+    }
+#endif
+
+    Socket sok;
+    while(1)
+    {
+        puts("main throws 5566");
+        sok.sendData("5566 der di ii");
+        sok.recvData();
+        printf("main gets %s\n",sok.recvbuffer);
+        sleep(1000);
+    }
+
 	return 0;
 }
