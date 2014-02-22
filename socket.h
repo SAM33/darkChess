@@ -8,9 +8,9 @@ public:
     void sendData(const char*);
     char recvbuffer[100];
 private:
-    unsigned int addrlen;
-    int sd;
-	struct sockaddr_in addr;
+    unsigned int __addrlen;
+    int __recvSocket;
+	struct sockaddr_in __addr;
 };
 
 #endif
